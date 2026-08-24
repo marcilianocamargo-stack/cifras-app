@@ -25,9 +25,10 @@ um app normal, com ícone próprio e tela cheia.
   enquanto você lê, e ► ◄ para pular direto ao próximo canto da pasta sem sair da tela.
   **O zoom de cada canto fica salvo** — quem chegou a mexer uma vez não precisa
   ajustar de novo da próxima vez que abrir aquela música.
-- **Trocar de canto sem sair do leitor** — o botão ☰ no topo abre a lista de cantos
-  da pasta (na ordem que você configurou), com o canto atual marcado. Um toque troca
-  de música na hora, sem precisar voltar pra pasta.
+- **Trocar de canto sem sair do leitor** — o botão redondo ☰ flutua no canto superior
+  direito da tela, sempre no mesmo lugar mesmo rolando ou dando zoom na cifra. Ele abre
+  a lista de cantos da pasta (na ordem que você configurou), com o canto atual marcado.
+  Um toque troca de música na hora, sem precisar voltar pra pasta.
 - **Modo noturno da página** (☽) — inverte as cores do PDF para ler no escuro.
 - **Funciona offline**, sempre. Nada é enviado para lugar nenhum: seus PDFs ficam
   guardados só no seu aparelho.

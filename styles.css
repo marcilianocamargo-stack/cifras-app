@@ -12,6 +12,7 @@
   --radius: 14px;
   --tap: 48px;
   --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
   color-scheme: dark;
 }
 html[data-theme="light"] {
@@ -28,6 +29,9 @@ html[data-theme="light"] {
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* garante que o atributo hidden sempre esconda, mesmo em elementos com
+   display:flex/grid definido por classe (ex.: .icon-btn) */
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body {
   margin: 0;
@@ -173,6 +177,20 @@ html[data-invert="1"] .page canvas, html[data-invert="1"] .page img { filter: in
 .viewer-count { flex: 1; text-align: center; font-size: 13px; color: var(--text-dim); }
 .icon-btn[disabled] { opacity: .3; }
 .icon-btn.is-on { color: var(--accent); }
+
+/* botão flutuante: fixo na tela, sempre à mão pra trocar de canto sem rolar até o topo */
+.fab-songlist {
+  position: fixed;
+  top: calc(66px + var(--safe-t)); right: 14px; z-index: 22;
+  width: 52px; height: 52px;
+  display: grid; place-items: center;
+  border-radius: 50%; border: 0;
+  background: var(--accent); color: var(--accent-ink);
+  font-size: 21px; line-height: 1;
+  box-shadow: 0 6px 18px rgba(0,0,0,.4);
+  cursor: pointer;
+}
+.fab-songlist:active { transform: scale(.94); }
 
 /* ---------- sheet (menus / diálogos) ---------- */
 .sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 40; }
