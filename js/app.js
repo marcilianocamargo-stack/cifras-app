@@ -4,6 +4,14 @@ import * as viewer from './viewer.js';
 const $ = sel => document.querySelector(sel);
 const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true });
 
+const IMG_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'heif'];
+const NON_SONG_EXTS = [
+  'mp3', 'wav', 'm4a', 'ogg', 'aac', 'flac',
+  'mp4', 'mov', 'avi', 'mkv',
+  'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+  'zip', 'rar', '7z', 'apk', 'exe', 'txt',
+];
+
 const state = {
   songs: [],
   folders: [],
@@ -135,9 +143,14 @@ async function onFilesChosen(files) {
   let added = 0, dup = 0, ignored = 0;
 
   for (const file of files) {
-    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-    const isImg = (file.type || '').startsWith('image/');
-    if (!isPdf && !isImg) { ignored++; continue; }
+    const ext = (file.name.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase();
+    const isImg = (file.type || '').startsWith('image/') || IMG_EXTS.includes(ext);
+    // O Android muitas vezes entrega PDFs com tipo genérico (application/octet-stream)
+    // ou vazio — comum em arquivos vindos do Drive ou de apps de "digitalizar para PDF".
+    // Como o seletor já foi aberto só para PDF/imagem, tratamos qualquer coisa que não
+    // seja claramente outra coisa (áudio, planilha, etc.) como PDF por padrão.
+    const isClearlyOther = !isImg && ext && NON_SONG_EXTS.includes(ext) && file.type !== 'application/pdf';
+    if (isClearlyOther) { ignored++; continue; }
 
     const key = `${file.name}|${file.size}`;
     if (seen.has(key)) {
@@ -150,7 +163,7 @@ async function onFilesChosen(files) {
     }
     seen.add(key);
 
-    const song = db.newSong(file, titleFromFile(file.name));
+    const song = db.newSong(file, titleFromFile(file.name), isImg);
     await db.putSong(song);
     state.songs.push(song);
     if (folder) folder.songIds.push(song.id);
@@ -300,7 +313,7 @@ function folderMenu(folder) {
 
 function songRow(song, { folder = null, index = -1, total = 0, sortable = false } = {}) {
   const subs = foldersOf(song.id).map(f => f.name);
-  const sub = subs.length ? subs.join(' · ') : (song.type === 'application/pdf' ? 'PDF' : 'Imagem');
+  const sub = subs.length ? subs.join(' · ') : (song.type?.startsWith('image/') ? 'Imagem' : 'PDF');
   const href = folder ? `#/canto/${song.id}?pasta=${folder.id}` : `#/canto/${song.id}`;
 
   return h('li', { class: 'row' },

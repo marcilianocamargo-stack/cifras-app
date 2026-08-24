@@ -43,12 +43,14 @@ export const getSongs = () => tx('songs', 'readonly', s => s.getAll());
 export const getSong = id => tx('songs', 'readonly', s => s.get(id));
 export const putSong = song => tx('songs', 'readwrite', s => s.put(song));
 
-export function newSong(file, title) {
+export function newSong(file, title, isImage = false) {
   return {
     id: uid(),
     title,
     fileName: file.name,
-    type: file.type || (/\.pdf$/i.test(file.name) ? 'application/pdf' : ''),
+    // O tipo relatado pelo Android para PDFs nem sempre é confiável (às vezes vem
+    // vazio ou genérico), então quem decide se é imagem é quem já checou a extensão.
+    type: isImage ? (file.type || 'image/*') : 'application/pdf',
     size: file.size,
     blob: file,
     addedAt: Date.now(),
