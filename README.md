@@ -15,7 +15,10 @@ um app normal, com ícone próprio e tela cheia.
 - **Pastas por celebração** — *Missa de domingo*, *Acampamento*, *Adoração*.
   Um mesmo canto pode estar em várias pastas sem ser duplicado.
 - **Ordem alfabética** — A→Z, Z→A ou mais recentes na biblioteca; dentro da pasta você
-  ainda tem a *ordem da celebração*, com setas para colocar cada canto no seu momento.
+  ainda tem a *ordem da celebração*: segura na alça (⋮⋮) de um canto e arrasta pra
+  posição que quiser — 1º, 2º, 3º... A lista rola sozinha se você arrastar até a borda
+  da tela. Quem preferir sem arrastar, tem as mesmas opções (mover pra cima/baixo/topo/
+  final) no menu ⋮ de cada canto.
 - **Busca instantânea** por nome do canto.
 - **Leitura pensada para tocar**: rolagem contínua, zoom, tela que não apaga enquanto
   você lê, e ► ◄ para pular direto ao próximo canto da pasta sem sair da tela.
@@ -38,8 +41,8 @@ O app está publicado em:
 ## Como uso no dia a dia
 
 1. **Carregar** → escolho todos os PDFs dos cantos → *Nova pasta* → "Missa de Domingo".
-2. Dentro da pasta, deixo em **Ordem da celebração** e uso ▲▼ para pôr na sequência:
-   entrada, ato penitencial, aclamação, ofertório, comunhão, final.
+2. Dentro da pasta, deixo em **Ordem da celebração** e arrasto pela alça (⋮⋮) pra
+   pôr na sequência: entrada, ato penitencial, aclamação, ofertório, comunhão, final.
 3. Na hora de tocar, abro o primeiro canto e vou passando com ►.
 4. Para achar um canto solto, uso a aba **Músicas** em A→Z ou a busca.
 

@@ -209,7 +209,8 @@ async function keepStorage() {
 
 /* -------------------------------------------------------------- menus */
 
-function songMenu(song, { folder = null } = {}) {
+function songMenu(song, { folder = null, index = -1, total = 0 } = {}) {
+  const canReorder = folder && index >= 0 && state.folderSort === 'manual';
   openSheet(
     h('h2', {}, song.title),
     sheetItem('&#9998;', 'Renomear', async () => {
@@ -221,6 +222,18 @@ function songMenu(song, { folder = null } = {}) {
       render();
     }),
     sheetItem('&#128193;', 'Pastas deste canto', () => { closeSheet(); folderPicker(song); }),
+    canReorder && index > 0
+      ? sheetItem('&#8598;', 'Mover para o topo', () => { closeSheet(); moveSongInFolder(folder, index, 0); })
+      : null,
+    canReorder && index > 0
+      ? sheetItem('&#9650;', 'Mover para cima', () => { closeSheet(); moveSongInFolder(folder, index, index - 1); })
+      : null,
+    canReorder && index < total - 1
+      ? sheetItem('&#9660;', 'Mover para baixo', () => { closeSheet(); moveSongInFolder(folder, index, index + 1); })
+      : null,
+    canReorder && index < total - 1
+      ? sheetItem('&#8600;', 'Mover para o final', () => { closeSheet(); moveSongInFolder(folder, index, total - 1); })
+      : null,
     folder
       ? sheetItem('&#10006;', 'Tirar desta pasta', async () => {
           closeSheet();
@@ -316,16 +329,10 @@ function songRow(song, { folder = null, index = -1, total = 0, sortable = false 
   const sub = subs.length ? subs.join(' · ') : (song.type?.startsWith('image/') ? 'Imagem' : 'PDF');
   const href = folder ? `#/canto/${song.id}?pasta=${folder.id}` : `#/canto/${song.id}`;
 
-  return h('li', { class: 'row' },
-    sortable ? h('div', { class: 'move-btns' },
-      h('button', {
-        class: 'icon-btn', html: '&#9650;', 'aria-label': 'Subir', disabled: index === 0,
-        onclick: () => moveInFolder(folder, index, -1),
-      }),
-      h('button', {
-        class: 'icon-btn', html: '&#9660;', 'aria-label': 'Descer', disabled: index === total - 1,
-        onclick: () => moveInFolder(folder, index, 1),
-      })) : null,
+  return h('li', { class: 'row', 'data-id': song.id },
+    sortable ? h('button', {
+      class: 'drag-handle', type: 'button', html: '&#8942;&#8942;', 'aria-label': 'Arrastar para reordenar',
+    }) : null,
     h('button', { class: 'row-main', onclick: () => { location.hash = href; } },
       h('span', { class: 'row-ico', html: sortable ? `${index + 1}.` : '&#9834;' }),
       h('span', { class: 'row-text' },
@@ -334,16 +341,16 @@ function songRow(song, { folder = null, index = -1, total = 0, sortable = false 
     h('div', { class: 'row-actions' },
       h('button', {
         class: 'icon-btn', html: '&#8942;', 'aria-label': 'Opções',
-        onclick: () => songMenu(song, { folder }),
+        onclick: () => songMenu(song, { folder, index, total }),
       })),
   );
 }
 
-async function moveInFolder(folder, index, delta) {
-  const to = index + delta;
-  if (to < 0 || to >= folder.songIds.length) return;
-  const ids = folder.songIds;
-  [ids[index], ids[to]] = [ids[to], ids[index]];
+/** Move um canto para uma posição qualquer dentro da pasta (ordem da celebração). */
+async function moveSongInFolder(folder, fromIndex, toIndex) {
+  if (toIndex < 0 || toIndex >= folder.songIds.length || toIndex === fromIndex) return;
+  const [id] = folder.songIds.splice(fromIndex, 1);
+  folder.songIds.splice(toIndex, 0, id);
   await db.putFolder(folder);
   render();
 }
@@ -390,6 +397,111 @@ function renderFolder(folder) {
     sortable,
   })));
   $('#folder-empty').hidden = songs.length > 0;
+}
+
+/* --------------------------------------------------- arrastar para reordenar */
+
+/**
+ * Arrastar-e-soltar por toque/mouse na "ordem da celebração".
+ * Segura na alça (⋮⋮), arrasta o canto pra posição desejada e solta — a ordem
+ * fica salva na hora. Perto do topo/rodapé da tela a lista rola sozinha.
+ */
+function initFolderDrag() {
+  const listEl = $('#folder-song-list');
+  const EDGE = 64;      // px da borda onde a lista começa a rolar sozinha
+  const SPEED = 14;     // px por quadro da rolagem automática
+
+  let dragLi = null;
+  let baseY = 0;
+  let baseScrollY = 0;
+  let scrollDir = 0;
+  let rafId = null;
+
+  function autoScroll() {
+    if (!dragLi) return;
+    if (scrollDir) window.scrollBy(0, scrollDir);
+    rafId = requestAnimationFrame(autoScroll);
+  }
+
+  function applyTransform(clientY) {
+    const dy = (clientY - baseY) + (window.scrollY - baseScrollY);
+    dragLi.style.transform = `translateY(${dy}px)`;
+  }
+
+  function onMove(e) {
+    if (!dragLi) return;
+    e.preventDefault();
+    applyTransform(e.clientY);
+
+    const topEdge = $('#topbar').getBoundingClientRect().bottom;
+    scrollDir = e.clientY < topEdge + EDGE ? -SPEED
+      : e.clientY > window.innerHeight - EDGE ? SPEED : 0;
+
+    const children = [...listEl.children];
+    const dragIndex = children.indexOf(dragLi);
+    const dragRect = dragLi.getBoundingClientRect();
+    const dragMid = dragRect.top + dragRect.height / 2;
+
+    for (let i = 0; i < children.length; i++) {
+      const sib = children[i];
+      if (sib === dragLi) continue;
+      const sibRect = sib.getBoundingClientRect();
+      const sibMid = sibRect.top + sibRect.height / 2;
+      const crossedUp = i < dragIndex && dragMid < sibMid;
+      const crossedDown = i > dragIndex && dragMid > sibMid;
+      if (crossedUp || crossedDown) {
+        listEl.insertBefore(dragLi, crossedUp ? sib : sib.nextSibling);
+        // recalibra pra manter o item exatamente onde estava na tela (sem "pulo")
+        const visualTop = dragRect.top;
+        dragLi.style.transform = 'none';
+        const newTop = dragLi.getBoundingClientRect().top;
+        baseY = e.clientY - (visualTop - newTop);
+        baseScrollY = window.scrollY;
+        applyTransform(e.clientY);
+        break;
+      }
+    }
+  }
+
+  async function onUp() {
+    if (!dragLi) return;
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    cancelAnimationFrame(rafId);
+    scrollDir = 0;
+
+    const li = dragLi;
+    dragLi = null;
+    li.classList.remove('dragging');
+    li.style.transform = '';
+    li.style.zIndex = '';
+
+    const folder = state.route.name === 'folder' && state.folders.find(f => f.id === state.route.id);
+    if (folder) {
+      folder.songIds = [...listEl.children].map(el => el.dataset.id);
+      await db.putFolder(folder);
+      renderFolder(folder);
+    }
+  }
+
+  listEl.addEventListener('pointerdown', e => {
+    if (e.button) return;                                 // só clique/toque primário
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) return;
+    const li = handle.closest('li');
+    if (!li) return;
+    e.preventDefault();
+    dragLi = li;
+    baseY = e.clientY;
+    baseScrollY = window.scrollY;
+    dragLi.classList.add('dragging');
+    dragLi.style.zIndex = '5';
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+    rafId = requestAnimationFrame(autoScroll);
+  });
 }
 
 /* -------------------------------------------------------------- rotas */
@@ -613,6 +725,8 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('hashchange', route);
+
+initFolderDrag();
 
 /* --------------------------------------------------------------- boot */
 

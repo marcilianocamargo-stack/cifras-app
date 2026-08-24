@@ -105,8 +105,26 @@ main { padding-bottom: calc(72px + var(--safe-b)); }
 .row-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
 .row-actions { display: flex; align-items: center; padding-right: 4px; }
 .row-actions .icon-btn { min-width: 40px; height: 40px; font-size: 17px; }
-.move-btns { display: flex; flex-direction: column; }
-.move-btns .icon-btn { min-width: 34px; height: 24px; font-size: 12px; }
+
+.drag-handle {
+  flex: none; width: 40px; height: var(--tap);
+  display: grid; place-items: center;
+  margin-left: 2px;
+  background: none; border: 0;
+  color: var(--text-dim);
+  font-size: 17px; line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none; user-select: none;
+}
+.drag-handle:active { color: var(--text); }
+.row.dragging {
+  position: relative;
+  overflow: visible;
+  background: var(--bg-elev-2);
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
+  cursor: grabbing;
+}
 
 .empty { text-align: center; color: var(--text-dim); padding: 40px 16px; }
 .empty-title { font-size: 17px; font-weight: 650; color: var(--text); margin: 0 0 8px; }
