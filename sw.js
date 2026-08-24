@@ -1,5 +1,5 @@
 /* Service worker: guarda o app inteiro para abrir sem internet. */
-const CACHE = 'cifras-v7';
+const CACHE = 'cifras-v8';
 
 const ASSETS = [
   './',
