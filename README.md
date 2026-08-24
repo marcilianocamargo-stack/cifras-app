@@ -20,8 +20,11 @@ um app normal, com ícone próprio e tela cheia.
   da tela. Quem preferir sem arrastar, tem as mesmas opções (mover pra cima/baixo/topo/
   final) no menu ⋮ de cada canto.
 - **Busca instantânea** por nome do canto.
-- **Leitura pensada para tocar**: rolagem contínua, zoom, tela que não apaga enquanto
-  você lê, e ► ◄ para pular direto ao próximo canto da pasta sem sair da tela.
+- **Leitura pensada para tocar**: rolagem contínua, zoom de 30% a 400% (dá pra deixar
+  2 ou 3 páginas cabendo na tela, ou ampliar uma letra pequena), tela que não apaga
+  enquanto você lê, e ► ◄ para pular direto ao próximo canto da pasta sem sair da tela.
+  **O zoom de cada canto fica salvo** — quem chegou a mexer uma vez não precisa
+  ajustar de novo da próxima vez que abrir aquela música.
 - **Modo noturno da página** (☽) — inverte as cores do PDF para ler no escuro.
 - **Funciona offline**, sempre. Nada é enviado para lugar nenhum: seus PDFs ficam
   guardados só no seu aparelho.

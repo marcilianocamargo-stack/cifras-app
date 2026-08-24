@@ -1,5 +1,5 @@
 /* Camada de dados: IndexedDB.
-   songs   -> { id, title, fileName, type, size, blob, addedAt }
+   songs   -> { id, title, fileName, type, size, blob, addedAt, zoom? }
    folders -> { id, name, songIds: [], createdAt }
    settings-> { key, value }                                        */
 

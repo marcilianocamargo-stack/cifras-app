@@ -32,10 +32,15 @@ export function destroy() {
   if (container) container.innerHTML = '';
 }
 
+// Arredonda em passos de 1% (não 10%): com incrementos de 25%, arredondar pra
+// 1 casa decimal fazia 0.75 virar 0.8 (por causa do desempate do Math.round),
+// e dois cliques de "diminuir" a partir de 100% davam 60% em vez de 50%.
+const clampZoom = z => Math.min(4, Math.max(0.3, Math.round(z * 100) / 100));
+
 export function getZoom() { return zoom; }
 
 export function setZoom(z) {
-  zoom = Math.min(4, Math.max(0.5, Math.round(z * 10) / 10));
+  zoom = clampZoom(z);
   applyZoom();
   return zoom;
 }
@@ -100,10 +105,12 @@ async function drawPage(el) {
 
 /**
  * Mostra um canto.
+ * @param {number} initialZoom zoom salvo desse canto (1 = 100%, padrão)
  * @returns {Promise<number>} número de páginas
  */
-export async function show(song, pagesEl, statusEl) {
+export async function show(song, pagesEl, statusEl, initialZoom = 1) {
   destroy();
+  zoom = clampZoom(initialZoom);
   container = pagesEl;
   const mySession = session;
   statusEl.hidden = false;

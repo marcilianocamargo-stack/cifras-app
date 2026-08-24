@@ -583,8 +583,16 @@ async function openSong({ id, folderId }) {
   $('#v-next').disabled = state.navIndex < 0 || state.navIndex >= state.navList.length - 1;
 
   window.scrollTo(0, 0);
-  await viewer.show(song, $('#pages'), $('#viewer-status'));
+  await viewer.show(song, $('#pages'), $('#viewer-status'), song.zoom || 1);
   requestWakeLock();
+}
+
+/** Lembra o zoom desse canto pra próxima vez que ele for aberto. */
+async function saveCurrentZoom(zoom) {
+  const song = songById(state.route.id);
+  if (!song) return;
+  song.zoom = zoom;
+  await db.putSong(song);
 }
 
 function goSibling(delta) {
@@ -691,8 +699,8 @@ function applyTheme(theme) {
 
 $('#v-prev').addEventListener('click', () => goSibling(-1));
 $('#v-next').addEventListener('click', () => goSibling(1));
-$('#v-zoom-in').addEventListener('click', () => viewer.setZoom(viewer.getZoom() + 0.25));
-$('#v-zoom-out').addEventListener('click', () => viewer.setZoom(viewer.getZoom() - 0.25));
+$('#v-zoom-in').addEventListener('click', () => saveCurrentZoom(viewer.setZoom(viewer.getZoom() + 0.25)));
+$('#v-zoom-out').addEventListener('click', () => saveCurrentZoom(viewer.setZoom(viewer.getZoom() - 0.25)));
 
 $('#v-invert').addEventListener('click', async () => {
   const on = document.documentElement.dataset.invert === '1' ? '' : '1';
