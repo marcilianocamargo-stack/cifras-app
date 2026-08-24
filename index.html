@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12161d">
+<meta name="description" content="Suas cifras em PDF, organizadas por pastas, offline no celular.">
+<title>Cifras</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar" id="topbar">
+  <button class="icon-btn" id="btn-back" hidden aria-label="Voltar">&#8592;</button>
+  <h1 class="topbar-title" id="topbar-title">Cifras</h1>
+  <button class="icon-btn" id="btn-theme" aria-label="Alternar tema">&#9681;</button>
+</header>
+
+<main>
+  <!-- ============ MÚSICAS ============ -->
+  <section class="view" id="view-songs">
+    <div class="toolbar">
+      <input type="search" id="search" class="search" placeholder="Buscar canto..." autocomplete="off" enterkeyhint="search">
+      <select id="sort" class="select" aria-label="Ordenar">
+        <option value="az">A &rarr; Z</option>
+        <option value="za">Z &rarr; A</option>
+        <option value="new">Mais recentes</option>
+      </select>
+    </div>
+    <ul class="list" id="song-list"></ul>
+    <div class="empty" id="songs-empty" hidden>
+      <p class="empty-title">Nenhum canto ainda</p>
+      <p>Toque em <strong>Carregar</strong> para escolher os PDFs das suas cifras. Eles ficam salvos no celular e funcionam sem internet.</p>
+    </div>
+  </section>
+
+  <!-- ============ PASTAS ============ -->
+  <section class="view" id="view-folders" hidden>
+    <div class="toolbar">
+      <button class="btn btn-primary wide" id="btn-new-folder">+ Nova pasta</button>
+    </div>
+    <ul class="list" id="folder-list"></ul>
+    <div class="empty" id="folders-empty" hidden>
+      <p class="empty-title">Nenhuma pasta ainda</p>
+      <p>Crie uma pasta para cada celebração &mdash; <em>Missa de domingo</em>, <em>Acampamento</em>, <em>Adoração</em> &mdash; e coloque os cantos na ordem do momento.</p>
+    </div>
+  </section>
+
+  <!-- ============ DENTRO DA PASTA ============ -->
+  <section class="view" id="view-folder" hidden>
+    <div class="toolbar">
+      <select id="folder-sort" class="select" aria-label="Ordenar pasta">
+        <option value="manual">Ordem da celebra&ccedil;&atilde;o</option>
+        <option value="az">A &rarr; Z</option>
+        <option value="za">Z &rarr; A</option>
+      </select>
+      <button class="btn" id="btn-folder-add">+ Cantos</button>
+      <button class="icon-btn" id="btn-folder-menu" aria-label="Op&ccedil;&otilde;es da pasta">&#8942;</button>
+    </div>
+    <ul class="list" id="folder-song-list"></ul>
+    <div class="empty" id="folder-empty" hidden>
+      <p class="empty-title">Pasta vazia</p>
+      <p>Toque em <strong>+ Cantos</strong> para escolher as m&uacute;sicas desta celebra&ccedil;&atilde;o.</p>
+    </div>
+  </section>
+
+  <!-- ============ VISUALIZADOR ============ -->
+  <section class="view viewer" id="view-song" hidden>
+    <div class="pages" id="pages"></div>
+    <div class="viewer-status" id="viewer-status" hidden></div>
+    <div class="viewer-bar" id="viewer-bar">
+      <button class="icon-btn" id="v-prev" aria-label="Canto anterior">&#9664;</button>
+      <button class="icon-btn" id="v-zoom-out" aria-label="Diminuir">&minus;</button>
+      <button class="icon-btn" id="v-zoom-in" aria-label="Aumentar">+</button>
+      <button class="icon-btn" id="v-invert" aria-label="Modo noturno da p&aacute;gina">&#9789;</button>
+      <span class="viewer-count" id="v-count"></span>
+      <button class="icon-btn" id="v-next" aria-label="Pr&oacute;ximo canto">&#9654;</button>
+    </div>
+  </section>
+</main>
+
+<nav class="tabbar" id="tabbar">
+  <a class="tab" href="#/" id="tab-songs"><span class="tab-ico">&#9834;</span><span>M&uacute;sicas</span></a>
+  <a class="tab" href="#/pastas" id="tab-folders"><span class="tab-ico">&#128193;</span><span>Pastas</span></a>
+  <button class="tab tab-load" id="tab-load"><span class="tab-ico">&#8593;</span><span>Carregar</span></button>
+</nav>
+
+<input type="file" id="file-input" accept="application/pdf,image/*" multiple hidden>
+
+<div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

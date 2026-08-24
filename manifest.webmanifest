@@ -1,0 +1,20 @@
+{
+  "name": "Cifras — cantos de igreja",
+  "short_name": "Cifras",
+  "description": "Suas cifras em PDF, organizadas por pastas, prontas para tocar — funciona offline.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#12161d",
+  "theme_color": "#12161d",
+  "categories": ["music", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
