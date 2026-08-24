@@ -29,8 +29,8 @@ um app normal, com ícone próprio e tela cheia.
 2. Menu ⋮ → **Instalar app** (ou *Adicionar à tela inicial*).
 3. Abra pelo ícone. A partir daí funciona sem internet.
 
-Publicando pelo GitHub Pages, o endereço fica assim:
-`https://SEU-USUARIO.github.io/cifras-app/`
+O app está publicado em:
+**https://marcilianocamargo-stack.github.io/cifras-app/**
 
 > O app precisa de um endereço `https://` (ou `localhost`) para ser instalável —
 > é uma exigência dos navegadores para PWAs.
