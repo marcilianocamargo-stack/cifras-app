@@ -195,6 +195,9 @@ html[data-invert="1"] .page canvas, html[data-invert="1"] .page img { filter: in
   text-align: left; cursor: pointer;
 }
 .sheet-item:active { background: var(--bg-elev-2); }
+.sheet-item.is-current { background: var(--bg-elev-2); }
+.sheet-item.is-current .row-title { color: var(--accent); font-weight: 650; }
+.sheet-item.is-current .row-ico { color: var(--accent); }
 .sheet-input {
   width: 100%; height: var(--tap); margin-bottom: 12px; padding: 0 12px;
   background: var(--bg-elev-2); border: 1px solid var(--line); border-radius: var(--radius);

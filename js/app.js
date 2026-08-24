@@ -526,6 +526,7 @@ function showView(name) {
   $('#tab-songs').classList.toggle('is-active', name === 'songs');
   $('#tab-folders').classList.toggle('is-active', name === 'folders' || name === 'folder');
   $('#btn-back').hidden = name === 'songs' || name === 'folders';
+  $('#btn-song-list').hidden = name !== 'song';
 }
 
 function render() {
@@ -581,10 +582,36 @@ async function openSong({ id, folderId }) {
     ? `${state.navIndex + 1} de ${state.navList.length}` : '';
   $('#v-prev').disabled = state.navIndex <= 0;
   $('#v-next').disabled = state.navIndex < 0 || state.navIndex >= state.navList.length - 1;
+  $('#btn-song-list').hidden = state.navList.length <= 1;
 
   window.scrollTo(0, 0);
   await viewer.show(song, $('#pages'), $('#viewer-status'), song.zoom || 1);
   requestWakeLock();
+}
+
+/** Lista de cantos da pasta (ou da biblioteca) pra trocar de música sem sair do leitor. */
+function openSongSwitcher() {
+  const fid = state.route.folderId;
+  const folder = fid ? state.folders.find(f => f.id === fid) : null;
+  const items = state.navList.map(songById).filter(Boolean);
+  let currentEl = null;
+
+  openSheet(
+    h('h2', {}, folder ? folder.name : 'Todos os cantos'),
+    ...items.map((s, i) => {
+      const atual = s.id === state.route.id;
+      const row = h('button', { class: `sheet-item${atual ? ' is-current' : ''}`, onclick: () => {
+        closeSheet();
+        if (!atual) location.hash = `#/canto/${s.id}${fid ? `?pasta=${fid}` : ''}`;
+      } },
+        h('span', { class: 'row-ico', html: atual ? '&#9654;' : `${i + 1}.` }),
+        h('span', { class: 'row-text row-title' }, s.title),
+        h('span', { class: 'check' }));
+      if (atual) currentEl = row;
+      return row;
+    }),
+  );
+  currentEl?.scrollIntoView({ block: 'center' });
 }
 
 /** Lembra o zoom desse canto pra próxima vez que ele for aberto. */
@@ -685,6 +712,8 @@ $('#btn-back').addEventListener('click', () => {
   else location.hash = state.route.name === 'song' && state.route.folderId
     ? `#/pasta/${state.route.folderId}` : '#/';
 });
+
+$('#btn-song-list').addEventListener('click', openSongSwitcher);
 
 $('#btn-theme').addEventListener('click', async () => {
   const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
